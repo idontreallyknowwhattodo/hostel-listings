@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Page - Add Hostels</title>
+  <style>
+    /* CSS Variables for light/dark mode */
+    :root {
+      --bg-color: #fff;
+      --text-color: #000;
+      --input-bg: #f9f9f9;
+      --border-color: #ccc;
+      --accent-color: #007bff;
+      --button-bg: #007bff;
+      --button-hover: #0056b3;
+      --nav-bg: #f1f1f1;
+      --nav-link-color: #333;
+    }
+    body.dark-mode {
+      --bg-color: #1e1e1e;
+      --text-color: #eee;
+      --input-bg: #2c2c2c;
+      --border-color: #555;
+      --accent-color: #3399ff;
+      --button-bg: #3399ff;
+      --button-hover: #1a6fcc;
+      --nav-bg: #222;
+      --nav-link-color: #ccc;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: var(--nav-bg);
+      padding: 10px 30px;
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    nav a {
+      margin-right: 20px;
+      text-decoration: none;
+      color: var(--nav-link-color);
+      font-weight: 600;
+    }
+
+    nav a:hover {
+      text-decoration: underline;
+    }
+
+    .toggle-container {
+      display: flex;
+      align-items: center;
+    }
+
+    /* Toggle switch styling */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+      margin-left: 10px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #ccc;
+      transition: 0.4s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--accent-color);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+
+    main {
+      flex: 1;
+      max-width: 700px;
+      margin: 40px auto;
+      background: var(--input-bg);
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 600;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="url"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      border-radius: 5px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-color);
+      color: var(--text-color);
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    button {
+      margin-top: 25px;
+      padding: 12px 25px;
+      width: 100%;
+      background-color: var(--button-bg);
+      color: white;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: var(--button-hover);
+    }
+
+    /* Image preview */
+    #imagePreview {
+      margin-top: 15px;
+      max-width: 100%;
+      max-height: 250px;
+      display: none;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      object-fit: contain;
+    }
+
+    /* Info text */
+    small {
+      color: var(--text-color);
+      opacity: 0.7;
+      font-style: italic;
+      font-size: 0.9rem;
+      margin-top: 3px;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="admin-login.html">Admin Login</a>
+      <a href="listings.html">Listing</a>
+      <a href="contact.html">Contact Us</a>
+    </nav>
+    <div class="toggle-container" title="Toggle Light/Dark Mode">
+      <label class="switch">
+        <input type="checkbox" id="modeToggle" />
+        <span class="slider"></span>
+      </label>
+    </div>
+  </header>
+
+  <main>
+    <h2>Add New Hostel</h2>
+    <form id="hostelForm" autocomplete="off">
+      <label for="hostelName">Hostel Name *</label>
+      <input type="text" id="hostelName" name="hostelName" required />
+
+      <label for="contactInfo">Contact Info *</label>
+      <input type="text" id="contactInfo" name="contactInfo" required placeholder="Phone or Email" />
+
+      <label for="messAvailable">Mess Available *</label>
+      <select id="messAvailable" name="messAvailable" required>
+        <option value="" disabled selected>Select</option>
+        <option value="Yes">Yes</option>
+        <option value="No">No</option>
+      </select>
+
+      <label for="price">Price (₹) *</label>
+      <input type="number" id="price" name="price" min="0" required />
+
+      <label for="location">Location *</label>
+      <input type="text" id="location" name="location" required />
+
+      <label for="imageLink">Image Link (optional)</label>
+      <input type="url" id="imageLink" name="imageLink" placeholder="https://example.com/image.jpg" />
+      <small>If you provide an image link, uploaded image will be ignored.</small>
+
+      <label for="imageUpload">Or Upload Image (optional)</label>
+      <input type="file" id="imageUpload" name="imageUpload" accept="image/*" />
+      <small>Image preview:</small>
+      <img id="imagePreview" alt="Image Preview" />
+
+      <label for="notes">Additional Notes</label>
+      <textarea id="notes" name="notes" rows="4" placeholder="Any extra info..."></textarea>
+
+      <button type="submit">Save Hostel</button>
+    </form>
+  </main>
+
+  <script>
+    // Dark mode toggle logic
+    const modeToggle = document.getElementById("modeToggle");
+
+    // On load, set theme from localStorage
+    window.addEventListener("load", () => {
+      if (localStorage.getItem("darkMode") === "true") {
+        document.body.classList.add("dark-mode");
+        modeToggle.checked = true;
+      }
+    });
+
+    // Toggle event
+    modeToggle.addEventListener("change", () => {
+      document.body.classList.toggle("dark-mode", modeToggle.checked);
+      localStorage.setItem("darkMode", modeToggle.checked);
+    });
+
+    // Elements
+    const form = document.getElementById("hostelForm");
+    const imageUpload = document.getElementById("imageUpload");
+    const imagePreview = document.getElementById("imagePreview");
+    const imageLinkInput = document.getElementById("imageLink");
+
+    // Show preview when image uploaded
+    imageUpload.addEventListener("change", () => {
+      const file = imageUpload.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = e => {
+          imagePreview.src = e.target.result;
+          imagePreview.style.display = "block";
+        };
+        reader.readAsDataURL(file);
+        // Clear image link input if uploading file
+        imageLinkInput.value = "";
+      } else {
+        imagePreview.src = "";
+        imagePreview.style.display = "none";
+      }
+    });
+
+    // Clear file upload if user types image link
+    imageLinkInput.addEventListener("input", () => {
+      if (imageLinkInput.value.trim() !== "") {
+        imageUpload.value = "";
+        imagePreview.src = "";
+        imagePreview.style.display = "none";
+      }
+    });
+
+    // Handle form submit
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      // Gather form data
+      const hostelName = form.hostelName.value.trim();
+      const contactInfo = form.contactInfo.value.trim();
+      const messAvailable = form.messAvailable.value;
+      const price = form.price.value;
+      const location = form.location.value.trim();
+      const notes = form.notes.value.trim();
+      const imageLink = form.imageLink.value.trim();
+
+      // Validation: messAvailable select default prevents submit if none chosen
+
+      // Function to save to localStorage
+      const saveHostel = (imageData) => {
+        const hostelData = {
+          hostelName,
+          contactInfo,
+          messAvailable,
+          price,
+          location,
+          notes,
+          image: imageData || "", // either URL or base64 string
+        };
+
+        // Get current hostels array or empty
+        const hostels = JSON.parse(localStorage.getItem("hostelListings")) || [];
+        hostels.push(hostelData);
+
+        localStorage.setItem("hostelListings", JSON.stringify(hostels));
+
+        alert("Hostel saved successfully!");
+
+        form.reset();
+        imagePreview.src = "";
+        imagePreview.style.display = "none";
+      };
+
+      // Decide image source:
+      // Priority: if imageLink exists, use it
+      // else if file uploaded, convert to base64 and save
+      if (imageLink) {
+        saveHostel(imageLink);
+      } else if (imageUpload.files[0]) {
+        const file = imageUpload.files[0];
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          saveHostel(event.target.result);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        // No image provided
+        saveHostel("");
+      }
+    });
+  </script>
+</body>
+</html>
