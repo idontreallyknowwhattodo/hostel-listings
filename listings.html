@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hostel Listings</title>
+  <style>
+    /* Variables for light/dark mode */
+    :root {
+      --bg-color: #fff;
+      --text-color: #000;
+      --card-bg: #f9f9f9;
+      --border-color: #ccc;
+      --accent-color: #007bff;
+      --nav-bg: #f1f1f1;
+      --nav-link-color: #333;
+    }
+    body.dark-mode {
+      --bg-color: #1e1e1e;
+      --text-color: #eee;
+      --card-bg: #2c2c2c;
+      --border-color: #555;
+      --accent-color: #3399ff;
+      --nav-bg: #222;
+      --nav-link-color: #ccc;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: var(--nav-bg);
+      padding: 10px 30px;
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    nav a {
+      margin-right: 20px;
+      text-decoration: none;
+      color: var(--nav-link-color);
+      font-weight: 600;
+    }
+
+    nav a:hover {
+      text-decoration: underline;
+    }
+
+    .toggle-container {
+      display: flex;
+      align-items: center;
+    }
+
+    /* Toggle switch styling */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+      margin-left: 10px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #ccc;
+      transition: 0.4s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--accent-color);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+
+    main {
+      flex: 1;
+      max-width: 960px;
+      margin: 40px auto;
+      padding: 0 20px 40px 20px;
+      box-sizing: border-box;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 10px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      background: #ddd;
+    }
+
+    .card-content {
+      padding: 15px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-content h3 {
+      margin: 0 0 10px 0;
+      font-size: 1.25rem;
+    }
+
+    .card-content p {
+      margin: 4px 0;
+      flex-grow: 1;
+    }
+
+    .card-content small {
+      color: var(--accent-color);
+      font-weight: 600;
+    }
+
+    /* Message if no listings */
+    #noListings {
+      text-align: center;
+      font-size: 1.2rem;
+      margin-top: 50px;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="admin-login.html">Admin Login</a>
+      <a href="listings.html">Listing</a>
+      <a href="contact.html">Contact Us</a>
+    </nav>
+    <div class="toggle-container" title="Toggle Light/Dark Mode">
+      <label class="switch">
+        <input type="checkbox" id="modeToggle" />
+        <span class="slider"></span>
+      </label>
+    </div>
+  </header>
+
+  <main>
+    <h1>Hostel Listings</h1>
+    <div id="cards" class="cards"></div>
+    <p id="noListings" style="display:none;">No hostels found. Please add some via Admin Page.</p>
+  </main>
+
+  <script>
+    // Dark mode toggle logic
+    const modeToggle = document.getElementById("modeToggle");
+
+    window.addEventListener("load", () => {
+      if (localStorage.getItem("darkMode") === "true") {
+        document.body.classList.add("dark-mode");
+        modeToggle.checked = true;
+      }
+      loadListings();
+    });
+
+    modeToggle.addEventListener("change", () => {
+      document.body.classList.toggle("dark-mode", modeToggle.checked);
+      localStorage.setItem("darkMode", modeToggle.checked);
+    });
+
+    function loadListings() {
+      const cardsContainer = document.getElementById("cards");
+      const noListingsMsg = document.getElementById("noListings");
+      cardsContainer.innerHTML = "";
+
+      const listings = JSON.parse(localStorage.getItem("hostelListings")) || [];
+
+      if (listings.length === 0) {
+        noListingsMsg.style.display = "block";
+        return;
+      } else {
+        noListingsMsg.style.display = "none";
+      }
+
+      listings.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "card";
+
+        // Image element
+        const img = document.createElement("img");
+        img.src = item.image && item.image.trim() !== "" ? item.image : "https://via.placeholder.com/400x180?text=No+Image";
+        img.alt = item.hostelName;
+
+        // Content container
+        const content = document.createElement("div");
+        content.className = "card-content";
+
+        // Hostel name
+        const name = document.createElement("h3");
+        name.textContent = item.hostelName;
+
+        // Contact info
+        const contact = document.createElement("p");
+        contact.innerHTML = `<strong>Contact:</strong> ${item.contactInfo}`;
+
+        // Mess availability
+        const mess = document.createElement("p");
+        mess.innerHTML = `<strong>Mess Available:</strong> ${item.messAvailable}`;
+
+        // Price
+        const price = document.createElement("p");
+        price.innerHTML = `<strong>Price:</strong> ₹${item.price}`;
+
+        // Location
+        const location = document.createElement("p");
+        location.innerHTML = `<strong>Location:</strong> ${item.location}`;
+
+        // Notes (optional)
+        const notes = document.createElement("p");
+        if (item.notes && item.notes.trim() !== "") {
+          notes.innerHTML = `<em>${item.notes}</em>`;
+        }
+
+        // Append elements
+        content.appendChild(name);
+        content.appendChild(contact);
+        content.appendChild(mess);
+        content.appendChild(price);
+        content.appendChild(location);
+        if (notes.textContent) content.appendChild(notes);
+
+        card.appendChild(img);
+        card.appendChild(content);
+
+        cardsContainer.appendChild(card);
+      });
+    }
+  </script>
+</body>
+</html>
